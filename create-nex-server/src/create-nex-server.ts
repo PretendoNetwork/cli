@@ -17,7 +17,6 @@ const isNpx = process.env._ && process.env._.includes('npx') || process.argv[1] 
 const command = isNpx ? `npx ${cyan(packageJson.name)}` : `${cyan(packageJson.name.split('/')[1])}`;
 
 let fullName: string = '';
-let shortName: string = '';
 
 function handleSigTerm() {
 	process.exit(0);
@@ -95,7 +94,7 @@ async function run() {
 
 	if (!program.shortName) {
 		console.log(yellow('No short name set. Deriving from full name.'), 'To specify a short name provide', green('--short-name=<name>'));
-		shortName = fullName;
+		program.shortName = fullName;
 	}
 
 	if (!program.nexVersion) {
