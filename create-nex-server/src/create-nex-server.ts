@@ -202,8 +202,8 @@ async function run() {
 			name: 'size',
 			message: 'Fragment size:',
 			choices: [
-				{ title: '1300 bytes', value: 1300 },
-				{ title: '900 bytes', value: 900 }
+				{ title: '1300 bytes (default for PRUDPv1)', value: 1300 },
+				{ title: '900 bytes (default for PRUDPv0)', value: 900 }
 			],
 			onRender() {
 				typedValue = (this as any).input; // TODO - Augment the prompts type defs
