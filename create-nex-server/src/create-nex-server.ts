@@ -5,7 +5,7 @@
 // * https://github.com/vercel/next.js/blob/f03fed0458affd4d2004245c65fbd9e7f47f2245/packages/create-next-app/create-app.ts#26
 import { green, cyan, yellow } from 'picocolors';
 import { Command } from 'commander';
-import prompts, { InitialReturnValue } from 'prompts';
+import prompts from 'prompts';
 import semver from 'semver';
 import NEX_VERSIONS from '@/nex-versions.json';
 import COMMON_PROTOCOLS from '@/protocols.json';
