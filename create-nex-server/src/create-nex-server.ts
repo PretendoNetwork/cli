@@ -35,7 +35,7 @@ function onPromptStateAbort() {
 
 const promptOptions = {
 	onCancel: onPromptStateAbort // * autocomplete does not call onState, need to use onCancel to detect cancelation
-}
+};
 
 const program = new Command(command)
 	.version(packageJson.version)
