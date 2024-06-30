@@ -25,16 +25,6 @@ function handleSigTerm() {
 process.on('SIGINT', handleSigTerm);
 process.on('SIGTERM', handleSigTerm);
 
-function onPromptState(state: {
-	value: InitialReturnValue
-	aborted: boolean
-	exited: boolean
-}) {
-	if (state.aborted) {
-		onPromptStateAbort();
-	}
-}
-
 function onPromptStateAbort() {
 	// * If we don't re-enable the terminal cursor before exiting
 	// * the program, the cursor will remain hidden
