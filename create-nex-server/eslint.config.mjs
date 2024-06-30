@@ -28,7 +28,8 @@ export default [
 			semi: [
 				'error',
 				'always'
-			]
+			],
+			'@typescript-eslint/no-explicit-any': 'warn'
 		}
 	}
 ];
