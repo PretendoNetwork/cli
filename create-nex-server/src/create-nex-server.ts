@@ -53,9 +53,11 @@ const program: CreateServerOptions = new Command(command)
 	})
 	.option('-n, --name <name>', 'Server (full) name')
 	.option('-N, --short-name <name>', 'Server (short) name')
+	.option('-p, --port <port>', 'Authentication server port. Secure server port is port+1', parseInt)
+	.option('-s, --secure-address <address>', 'Secure server address')
 	.option('-v, --nex-version <version>', 'Server NEX version')
 	.option('-k, --access-key <key>', 'Server access key')
-	.option('-s, --session-key-size <size>', 'Size of the session key inside the Kerberos ticket', parseInt)
+	.option('-S, --session-key-size <size>', 'Size of the session key inside the Kerberos ticket', parseInt)
 	.option('-f, --fragment-size <size>', 'Size of DATA packet fragments', parseInt)
 	.parse(process.argv)
 	.opts();
@@ -73,11 +75,11 @@ async function run() {
 		}, promptOptions);
 
 		if (typeof response.path === 'string') {
-			fullName = response.path.trim();
+			program.name = response.path.trim();
 		}
 	}
 
-	if (!fullName) {
+	if (!program.name) {
 		console.log(
 			'\nPlease specify the server name:\n' +
 			`    ${command} ${green('<server-name>')}\n` +
@@ -91,7 +93,57 @@ async function run() {
 
 	if (!program.shortName) {
 		console.log(yellow('No short name set. Deriving from full name.'), 'To specify a short name provide', green('--short-name=<name>'));
-		program.shortName = fullName;
+		program.shortName = program.name;
+	}
+
+	if (!program.port || program.port < 60000 || program.port > 65535) {
+		const response = await prompts({
+			type: 'number',
+			name: 'port',
+			message: 'Authentication server port (secure server port is port+1):',
+			min: 60000,
+			max: 65534 // * One less than max, to make room for the secure server port
+		}, promptOptions);
+
+		if (typeof response.port === 'number') {
+			program.port = response.port;
+		}
+	}
+
+	if (!program.port) {
+		console.log(
+			'\nPlease specify a port:\n' +
+			`    ${command} ${green('--port=<port>')}\n` +
+			'For example:\n' +
+			`    ${command} ${green('--port=60000')}\n\n` +
+			`Run ${command} ${green('--help')} to see all options.`
+		);
+
+		process.exit(1);
+	}
+
+	if (!program.secureAddress) {
+		const response = await prompts({
+			type: 'text',
+			name: 'address',
+			message: 'Secure server address:'
+		}, promptOptions);
+
+		if (typeof response.address === 'string') {
+			program.secureAddress = response.address;
+		}
+	}
+
+	if (!program.secureAddress) {
+		console.log(
+			'\nPlease specify a secure server address:\n' +
+			`    ${command} ${green('--secure-address=<address>')}\n` +
+			'For example:\n' +
+			`    ${command} ${green('--secure-address=d-ha2j-secure.example.com')}\n\n` +
+			`Run ${command} ${green('--help')} to see all options.`
+		);
+
+		process.exit(1);
 	}
 
 	if (!program.nexVersion) {
