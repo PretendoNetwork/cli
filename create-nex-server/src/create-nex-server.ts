@@ -7,9 +7,16 @@ import { green, cyan, yellow } from 'picocolors';
 import { Command } from 'commander';
 import prompts from 'prompts';
 import semver from 'semver';
+import createServer, { CreateServerOptions } from '@/create-server';
 import NEX_VERSIONS from '@/nex-versions.json';
 import COMMON_PROTOCOLS from '@/protocols.json';
-import packageJson from '@/../package.json'; // * Have to do relative here
+
+// * Just copy what we need from the package.json
+// * so it doesn't need to be imported
+const packageJson = {
+	name: '@pretendonetwork/create-nex-server',
+	version: '1.0.0'
+};
 
 // * Command can be installed either globally or via npx. Check which was used so we can show
 // * the caller the same command they ran in errors/help messages
@@ -37,7 +44,7 @@ const promptOptions = {
 	onCancel: onPromptStateAbort // * autocomplete does not call onState, need to use onCancel to detect cancelation
 };
 
-const program = new Command(command)
+const program: CreateServerOptions = new Command(command)
 	.version(packageJson.version)
 	.argument('[server-directory]')
 	.usage(`${green('[server-directory]')}`)
@@ -229,7 +236,10 @@ async function run() {
 		choices: COMMON_PROTOCOLS.map(protocol => ({ title: protocol, value: protocol.toLowerCase().replace(/ /g, '-').replace(/[^a-zA-Z0-9-]/g, '') })),
 	}, promptOptions);
 
-	console.log('Server settings:', program);
+	createServer({
+		...program,
+		commonProtocols: response.protocols
+	});
 }
 
 run();

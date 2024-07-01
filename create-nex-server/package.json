@@ -5,7 +5,7 @@
   "main": "./dist/create-nex-server.js",
   "scripts": {
     "lint": "npx eslint src",
-    "build": "npm run lint && npm run clean && npx tsc",
+    "build": "npm run lint && npm run clean && npx tsc && tsc-alias",
     "clean": "npx rimraf ./dist",
     "start": "node --enable-source-maps ."
   },
@@ -19,6 +19,7 @@
     "@types/semver": "^7.5.8",
     "eslint": "^9.5.0",
     "globals": "^15.6.0",
+    "tsc-alias": "^1.8.10",
     "typescript": "^5.5.2",
     "typescript-eslint": "^7.13.1"
   },
