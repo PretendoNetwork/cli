@@ -9,7 +9,7 @@ import prompts from 'prompts';
 import semver from 'semver';
 import createServer, { CreateServerOptions } from '@/create-server';
 import NEX_VERSIONS from '@/nex-versions.json';
-import COMMON_PROTOCOLS from '@/protocols.json';
+import COMMON_PROTOCOLS from '@/common-protocols.json';
 
 // * Just copy what we need from the package.json
 // * so it doesn't need to be imported
@@ -284,7 +284,7 @@ async function run() {
 	const response = await prompts({
 		type: 'autocompleteMultiselect',
 		name: 'protocols',
-		message: 'Protocols:',
+		message: 'Protocols from "common" library:',
 		choices: COMMON_PROTOCOLS.map(protocol => ({ title: protocol, value: protocol.toLowerCase().replace(/ /g, '-').replace(/[^a-zA-Z0-9-]/g, '') })),
 	}, promptOptions);
 
