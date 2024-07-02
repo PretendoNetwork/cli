@@ -288,6 +288,22 @@ async function run() {
 		choices: COMMON_PROTOCOLS.map(protocol => ({ title: protocol, value: protocol.toLowerCase().replace(/ /g, '-').replace(/[^a-zA-Z0-9-]/g, '') })),
 	}, promptOptions);
 
+	if (response.protocols.includes('datastore') || response.protocols.includes('ranking')) {
+		const response = await prompts({
+			type: 'text',
+			name: 'uri',
+			message: 'Postgres URI:',
+		}, promptOptions);
+
+		if (typeof response.uri === 'string') {
+			program.databaseURI = response.uri;
+		} else {
+			console.log(`\nA Postgres database URI is required when using either the ${green('DataStore')} or ${green('Ranking')} protocols`);
+
+			process.exit(1);
+		}
+	}
+
 	createServer({
 		...program,
 		commonProtocols: response.protocols

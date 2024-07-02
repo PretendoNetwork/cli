@@ -11,6 +11,7 @@ export type CreateServerOptions = {
 	sessionKeySize: number;
 	fragmentSize: number;
 	commonProtocols: string[];
+	databaseURI?: string;
 }
 
 export default function createServer(options: CreateServerOptions): void {
