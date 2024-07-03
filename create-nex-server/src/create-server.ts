@@ -1,6 +1,9 @@
 import fs from 'fs-extra';
-import { cyan } from 'picocolors';
-import { generateInitFile } from '@/file-generators';
+import { cyan, red } from 'picocolors';
+import {
+	generateInitFile,
+	generateDotEnvFile
+} from '@/file-generators';
 import type CreateServerOptions from '@/types/create-server-options';
 import type File from '@/types/file';
 
@@ -20,11 +23,15 @@ export default function createServer(options: CreateServerOptions): void {
 		fs.ensureFileSync(file.path);
 		fs.writeFileSync(file.path, file.content);
 	}
+
+	console.log(`NEX server written to ${cyan(options.outPath)}`);
+	console.log(`${red('ENSURE YOU UPDATE THE PASSWORDS AND AES KEY IN')} ${cyan(`${options.outPath}/.env`)}`);
 }
 
 function generateSourceFiles(options: CreateServerOptions): File[] {
 	const files = [
-		generateInitFile(options)
+		generateInitFile(options),
+		generateDotEnvFile(options)
 	];
 
 	return files;
