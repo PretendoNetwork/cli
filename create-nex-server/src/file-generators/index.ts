@@ -1,0 +1,1 @@
+export { default as generateInitFile} from '@/file-generators/init.go';

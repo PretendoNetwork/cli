@@ -1,28 +1,31 @@
 import fs from 'fs-extra';
 import { cyan } from 'picocolors';
-
-export type CreateServerOptions = {
-	name: string;
-	shortName: string;
-	port: number;
-	secureAddress: string;
-	nexVersion: string;
-	accessKey: string;
-	sessionKeySize: number;
-	fragmentSize: number;
-	commonProtocols: string[];
-	databaseURI?: string;
-}
+import { generateInitFile } from '@/file-generators';
+import type CreateServerOptions from '@/types/create-server-options';
+import type File from '@/types/file';
 
 export default function createServer(options: CreateServerOptions): void {
-	console.log(options);
+	options.usesDatabase = options.commonProtocols.includes('datastore') || options.commonProtocols.includes('ranking');
+	options.outPath = `${process.cwd()}/${options.name.toLowerCase().replace(/ /g, '-').replace(/[^a-zA-Z0-9-]/g, '')}`;
+	options.environmentVariablePrefix = `PN_${options.shortName.toUpperCase().replace(/ /g, '_').replace(/[^a-zA-Z0-9_]/g, '')}_CONFIG`;
+	options.moduleName = `github.com/PretendoNetwork/${options.name.toLowerCase().replace(/ /g, '-').replace(/[^a-zA-Z0-9-]/g, '')}`;
 
-	const outPath = `${process.cwd()}/${options.name.toLowerCase().replace(/ /g, '-').replace(/[^a-zA-Z0-9-]/g, '')}`;
-	//const environmentVariablePrefix = options.shortName.toUpperCase().replace(/ /g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+	console.log('Generating source files...');
 
-	console.log(`Writing NEX server to ${cyan(outPath)}`);
+	const files = generateSourceFiles(options);
 
-	fs.ensureDirSync(outPath);
+	console.log(`Writing NEX server to ${cyan(options.outPath)}`);
 
-	// TODO - Copy from template? String build everything?
+	for (const file of files) {
+		fs.ensureFileSync(file.path);
+		fs.writeFileSync(file.path, file.content);
+	}
+}
+
+function generateSourceFiles(options: CreateServerOptions): File[] {
+	const files = [
+		generateInitFile(options)
+	];
+
+	return files;
 }

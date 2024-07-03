@@ -7,9 +7,10 @@ import { green, cyan, yellow } from 'picocolors';
 import { Command } from 'commander';
 import prompts from 'prompts';
 import semver from 'semver';
-import createServer, { CreateServerOptions } from '@/create-server';
+import createServer from '@/create-server';
 import NEX_VERSIONS from '@/nex-versions.json';
 import COMMON_PROTOCOLS from '@/common-protocols.json';
+import type CreateServerOptions from '@/types/create-server-options';
 
 // * Just copy what we need from the package.json
 // * so it doesn't need to be imported
