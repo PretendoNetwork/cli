@@ -2,7 +2,10 @@ import fs from 'fs-extra';
 import { cyan, red } from 'picocolors';
 import {
 	generateInitFile,
-	generateDotEnvFile
+	generateDotEnvFile,
+	generateGlobalsFile,
+	generateAccountDetailsByPIDFile,
+	generateAccountDetailsByUsernameFile
 } from '@/file-generators';
 import type CreateServerOptions from '@/types/create-server-options';
 import type File from '@/types/file';
@@ -31,7 +34,10 @@ export default function createServer(options: CreateServerOptions): void {
 function generateSourceFiles(options: CreateServerOptions): File[] {
 	const files = [
 		generateInitFile(options),
-		generateDotEnvFile(options)
+		generateDotEnvFile(options),
+		generateGlobalsFile(options),
+		generateAccountDetailsByPIDFile(options),
+		generateAccountDetailsByUsernameFile(options),
 	];
 
 	return files;

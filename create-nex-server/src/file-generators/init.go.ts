@@ -29,8 +29,11 @@ export default function generateInitFile(options: CreateServerOptions): File {
 	file.content += `\tsecureServerPassword := os.Getenv("${options.environmentVariablePrefix}_SECURE_PASSWORD")\n`;
 	file.content += `\taesKey := os.Getenv("${options.environmentVariablePrefix}_AES_KEY")\n`;
 	file.content += `\tauthenticationServerPort := os.Getenv("${options.environmentVariablePrefix}_AUTHENTICATION_SERVER_PORT")\n`;
-	file.content += `\tsecureServerHost := os.Getenv("${options.environmentVariablePrefix}_SERVER_HOST")\n`;
-	file.content += `\tsecureServerPort := os.Getenv("${options.environmentVariablePrefix}_SERVER_PORT")\n`;
+	file.content += `\tsecureServerHost := os.Getenv("${options.environmentVariablePrefix}_SECURE_SERVER_HOST")\n`;
+	file.content += `\tsecureServerPort := os.Getenv("${options.environmentVariablePrefix}_SECURE_SERVER_PORT")\n`;
+	file.content += `\taccountGRPCHost := os.Getenv("${options.environmentVariablePrefix}_ACCOUNT_GRPC_HOST")\n`;
+	file.content += `\taccountGRPCPort := os.Getenv("${options.environmentVariablePrefix}_ACCOUNT_GRPC_PORT")\n`;
+	file.content += `\taccountGRPCAPIKey := os.Getenv("${options.environmentVariablePrefix}_ACCOUNT_GRPC_API_KEY")\n`;
 	file.content += '\n';
 
 	if (options.usesDatabase) {
@@ -100,6 +103,39 @@ export default function generateInitFile(options: CreateServerOptions): File {
 	file.content += `\t\tglobals.Logger.Errorf("${options.environmentVariablePrefix}_SECURE_SERVER_PORT is not a valid port. Expected 0-65535, got %s", secureServerPort)\n`;
 	file.content += '\t\tos.Exit(0)\n';
 	file.content += '\t}\n';
+	file.content += '\n';
+	file.content += '\tif strings.TrimSpace(accountGRPCHost) == "" {\n';
+	file.content += `\t\tglobals.Logger.Error("${options.environmentVariablePrefix}_ACCOUNT_GRPC_HOST environment variable not set")\n`;
+	file.content += '\t\tos.Exit(0)\n';
+	file.content += '\t}\n';
+	file.content += '\n';
+	file.content += '\tif strings.TrimSpace(accountGRPCPort) == "" {\n';
+	file.content += `\t\tglobals.Logger.Error("${options.environmentVariablePrefix}_ACCOUNT_GRPC_PORT environment variable not set")\n`;
+	file.content += '\t\tos.Exit(0)\n';
+	file.content += '\t}\n';
+	file.content += '\n';
+	file.content += '\tif port, err := strconv.Atoi(accountGRPCPort); err != nil {\n';
+	file.content += `\t\tglobals.Logger.Errorf("${options.environmentVariablePrefix}_ACCOUNT_GRPC_PORT is not a valid port. Expected 0-65535, got %s", accountGRPCPort)\n`;
+	file.content += '\t\tos.Exit(0)\n';
+	file.content += '\t} else if port < 0 || port > 65535 {\n';
+	file.content += `\t\tglobals.Logger.Errorf("${options.environmentVariablePrefix}_ACCOUNT_GRPC_PORT is not a valid port. Expected 0-65535, got %s", accountGRPCPort)\n`;
+	file.content += '\t\tos.Exit(0)\n';
+	file.content += '\t}\n';
+	file.content += '\n';
+	file.content += '\tif strings.TrimSpace(accountGRPCAPIKey) == "" {\n';
+	file.content += `\t\tglobals.Logger.Warning("Insecure gRPC server detected. ${options.environmentVariablePrefix}_ACCOUNT_GRPC_API_KEY environment variable not set")\n`;
+	file.content += '\t}\n';
+	file.content += '\n';
+	file.content += '\tglobals.GRPCAccountClientConnection, err = grpc.Dial(fmt.Sprintf("%s:%s", accountGRPCHost, accountGRPCPort), grpc.WithTransportCredentials(insecure.NewCredentials()))\n';
+	file.content += '\tif err != nil {\n';
+	file.content += '\t\tglobals.Logger.Criticalf("Failed to connect to account gRPC server: %v", err)\n';
+	file.content += '\t\tos.Exit(0)\n';
+	file.content += '\t}\n';
+	file.content += '\n';
+	file.content += '\tglobals.GRPCAccountClient = pb.NewAccountClient(globals.GRPCAccountClientConnection)\n';
+	file.content += '\tglobals.GRPCAccountCommonMetadata = metadata.Pairs(\n';
+	file.content += '\t\t"X-API-Key", accountGRPCAPIKey,\n';
+	file.content += '\t)\n';
 
 	if (options.usesDatabase) {
 		file.content += '\n';
@@ -120,16 +156,23 @@ function generateImports(file: File, options: CreateServerOptions): void {
 	}
 
 	file.content += '\t"encoding/hex"\n';
+	file.content += '\t"fmt"\n';
 	file.content += '\t"os"\n';
 	file.content += '\t"strconv"\n';
 	file.content += '\t"strings"\n';
+	file.content += '\n';
 
 	if (options.usesDatabase) {
 		file.content += `\t"${options.moduleName}/database"\n`;
 	}
 
 	file.content += `\t"${options.moduleName}/globals"\n`;
+	file.content += '\tpb "github.com/PretendoNetwork/grpc-go/account"\n';
 	file.content += '\t"github.com/PretendoNetwork/plogger-go"\n';
+	file.content += '\t"google.golang.org/grpc"\n';
+	file.content += '\t"google.golang.org/grpc/credentials/insecure"\n';
+	file.content += '\t"google.golang.org/grpc/metadata"\n';
+	file.content += '\n';
 	file.content += '\t"github.com/joho/godotenv"\n';
 	file.content += ')\n';
 	file.content += '\n';
