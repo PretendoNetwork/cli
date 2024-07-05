@@ -1,0 +1,34 @@
+{
+  "name": "@pretendonetwork/create-nex-server",
+  "version": "1.0.0",
+  "description": "CLI tool for creating NEX server skeletons",
+  "main": "./dist/create-nex-server.js",
+  "scripts": {
+    "lint": "npx eslint src",
+    "build": "npm run lint && npm run clean && npx tsc && tsc-alias",
+    "clean": "npx rimraf ./dist",
+    "start": "node --enable-source-maps ."
+  },
+  "bin": {
+    "create-nex-server": "./dist/create-nex-server.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.14.8",
+    "@types/prompts": "^2.4.9",
+    "@types/semver": "^7.5.8",
+    "eslint": "^9.5.0",
+    "globals": "^15.6.0",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.5.2",
+    "typescript-eslint": "^7.13.1"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "picocolors": "^1.0.1",
+    "prompts": "^2.4.2",
+    "semver": "^7.6.2"
+  }
+}
